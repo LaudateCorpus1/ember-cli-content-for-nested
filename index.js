@@ -1,9 +1,10 @@
 'use strict';
 
 function contentForNested(type, config, content, contentFor) {
-  let isDummyApp = this.project.pkg.name === this.name;
+  let isDummyApp = this.project.isEmberCLIAddon();
 
-  // This also works.
+  // These also work.
+  // let isDummyApp = this.project.pkg.name === this.name;
   // let isDummyApp = this.project.pkg.name !== this.app.name;
 
   // Dummy apps are special snowflakes, and they share
