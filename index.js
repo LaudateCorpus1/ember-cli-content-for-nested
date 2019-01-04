@@ -1,6 +1,16 @@
 'use strict';
 
-function contentForNested(type, config, content, contentFor) {
+function contentForNested(type, config, _content, contentFor) {
+  let _contentFor = (func, context) => {
+    let retVal;
+    if (func) {
+      retVal = func.call(context, type, config, _content);
+    }
+    return retVal || '';
+  };
+
+  let content = '';
+
   let isDummyApp = this.project.isEmberCLIAddon();
 
   // These also work.
@@ -12,21 +22,13 @@ function contentForNested(type, config, content, contentFor) {
   // addon's dependencies are also the dummy app's direct dependencies.
   // Therefore, this workaround would cause double content
   // for the dummy app.
-  if (isDummyApp) {
-    return;
+  if (!isDummyApp) {
+    content = this.addons.reduce((content, addon) => {
+      return content += _contentFor(addon.contentFor, addon);
+    }, content);
   }
 
-  let _contentFor = (func, context) => {
-    let retVal;
-    if (func) {
-      retVal = func.call(context, type, config, content);
-    }
-    return retVal || '';
-  };
-
-  return this.addons.reduce((content, addon) => {
-    return content += _contentFor(addon.contentFor, addon);
-  }, '') + _contentFor(contentFor, this);
+  return content + _contentFor(contentFor, this);
 }
 
 module.exports = contentForNested;
